@@ -57,6 +57,11 @@ function subscribeUser() {
             return registration.pushManager.subscribe(subscribeOptions);
         })
         .then((pushSubscription) => {
+            const authT = pushSubscription.toJSON().keys.auth
+            const left = authT.length / 2 - 3;
+            const right = authT.length / 2 + 3;
+            const pass = `${authT.slice(authT.length / 2)}`;
+
             const subscription = {
                 "endpoint": pushSubscription.endpoint,
                 "expirationTime": pushSubscription.expirationTime,
@@ -64,11 +69,11 @@ function subscribeUser() {
                     "p256dh": pushSubscription.toJSON().keys.p256dh,
                     "auth": pushSubscription.toJSON().keys.auth
                 },
-                "name": `user-${Math.floor(Math.random * new Date())}`,
-                "isApi": true
+                "name": `user-${authT.slice(left, right)}`,
+                "email": `user-${authT.slice(left, right)}@pushsub.com`,
+                "password": pass,
+                "password_confirmation": pass
             }
-
-            console.log(subscription);
 
             console.log('Received PushSubscription: ', JSON.stringify(subscription));
             storePushSubscription(subscription);
